@@ -18,11 +18,6 @@ resource "aws_api_gateway_method" "notification" {
   resource_id = "${aws_api_gateway_resource.notification.id}"
   http_method = "POST"
   authorization = "NONE"
-
-  request_parameters {
-    "method.request.querystring.Message" = true
-    #"method.request.querystring.TopicArn" = true
-  }
 }
 
 resource "aws_api_gateway_method_response" "ok" {
@@ -55,7 +50,7 @@ resource "aws_api_gateway_integration" "notification-topic" {
 
   request_parameters = {
     "integration.request.querystring.TopicArn" = "'${aws_sns_topic.payment-notification-topic.arn}'"
-    "integration.request.querystring.Message" = "method.request.querystring.Message"
+    "integration.request.querystring.Message" = "method.request.body"
   }
 }
 
