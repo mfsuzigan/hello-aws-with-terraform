@@ -19,6 +19,10 @@ resource "aws_api_gateway_method" "notification" {
   http_method = "POST"
   authorization = "NONE"
   request_validator_id = "${aws_api_gateway_request_validator.payment-notification.id}"
+
+  request_models {
+    "application/json" = "paymentNotificationRequestModel"
+  }
 }
 
 resource "aws_api_gateway_method_response" "ok" {
@@ -67,7 +71,7 @@ resource "aws_api_gateway_request_validator" "payment-notification" {
 
 resource "aws_api_gateway_model" "payment-notification" {
   content_type = "application/json"
-  name = "payment-notification-model"
+  name = "paymentNotificationRequestModel"
   rest_api_id = "${aws_api_gateway_rest_api.payment-notification.id}"
 
   schema = <<EOF
