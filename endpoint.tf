@@ -55,12 +55,15 @@ resource "aws_api_gateway_integration" "notification-topic" {
   request_parameters = {
     "integration.request.querystring.TopicArn" = "'${aws_sns_topic.payment-notification-topic.arn}'"
     "integration.request.querystring.Message" = "method.request.body"
+    "integration.request.querystring.MessageAttributes.entry.1.Name" = "'payment-type'"
+    "integration.request.querystring.MessageAttributes.entry.1.Value.DataType" = "'String'"
+    "integration.request.querystring.MessageAttributes.entry.1.Value.StringValue" = "method.request.body.type"
   }
 }
 
 resource "aws_api_gateway_deployment" "payment-notification"{
   rest_api_id = "${aws_api_gateway_rest_api.payment-notification.id}"
-  stage_name = "v1"
+  stage_name = "v2"
 }
 
 resource "aws_api_gateway_request_validator" "payment-notification" {
@@ -73,29 +76,17 @@ resource "aws_api_gateway_model" "payment-notification" {
   content_type = "application/json"
   name = "paymentNotificationRequestModel"
   rest_api_id = "${aws_api_gateway_rest_api.payment-notification.id}"
+  schema = "${data.local_file.request-schema.content}"
+}
 
-  schema = <<EOF
-  {
-  "type": "object",
-  "required": [
-  "reference",
-  "type",
-  "body"
-  ],
-  "properties": {
-  "reference": {
-  "type": "string",
-  "pattern": "^(.*)$"
-  },
-  "type": {
-  "type": "string",
-  "pattern": "^(.*)$"
-  },
-  "body": {
-  "type": "string",
-  "pattern": "^(.*)$"
-  }
-  }
-  }
-  EOF
+data "local_file" "request-schema"{
+  filename = "${path.module}/request_schema.json"
+}
+
+data "local_file" "boleto-payment-filter-policy"{
+  filename = "${path.module}/payment_notification_subscription_policies/boleto.json"
+}
+
+data "local_file" "debit-online-payment-filter-policy"{
+  filename = "${path.module}/payment_notification_subscription_policies/debit_online.json"
 }

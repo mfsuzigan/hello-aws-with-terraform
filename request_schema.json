@@ -1,0 +1,22 @@
+{
+	"type": "object",
+	"required": [
+		"reference",
+		"type",
+		"body"
+	],
+	"properties": {
+		"reference": {
+			"type": "string",
+			"pattern": "^(.*)$"
+		},
+		"type": {
+			"type": "string",
+			"pattern": "^(.*)$"
+		},
+		"body": {
+			"type": "string",
+			"pattern": "^(.*)$"
+		}
+	}
+}

@@ -11,6 +11,20 @@ resource "aws_sns_topic" "payment-notification-topic" {
   name = "payment-notification-topic"
 }
 
+resource "aws_sns_topic_subscription" "dummy-boleto" {
+  endpoint = "arn:aws:sqs:us-west-2:720044753173:test-queue-1"
+  protocol = "sqs"
+  topic_arn = "${aws_sns_topic.payment-notification-topic.arn}"
+  filter_policy = "${data.local_file.boleto-payment-filter-policy.content}"
+}
+
+resource "aws_sns_topic_subscription" "dummy-debit-online" {
+  endpoint = "arn:aws:sqs:us-west-2:720044753173:test-queue-2"
+  protocol = "sqs"
+  topic_arn = "${aws_sns_topic.payment-notification-topic.arn}"
+  filter_policy = "${data.local_file.debit-online-payment-filter-policy.content}"
+}
+
 resource "aws_sns_topic_policy" "payment-notification-policy" {
   arn = "${aws_sns_topic.payment-notification-topic.arn}"
   policy = "${data.aws_iam_policy_document.sns-topic-policy.json}"
@@ -36,7 +50,6 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 }
 
 data "aws_iam_policy_document" "trust-policy"{
-
   statement {
     actions = [
       "sts:AssumeRole"
