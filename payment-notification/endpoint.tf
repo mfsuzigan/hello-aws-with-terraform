@@ -63,7 +63,7 @@ resource "aws_api_gateway_integration" "notification-topic" {
 
 resource "aws_api_gateway_deployment" "payment-notification"{
   rest_api_id = "${aws_api_gateway_rest_api.payment-notification.id}"
-  stage_name = "v2"
+  stage_name = "v1"
 }
 
 resource "aws_api_gateway_request_validator" "payment-notification" {
@@ -80,13 +80,13 @@ resource "aws_api_gateway_model" "payment-notification" {
 }
 
 data "local_file" "request-schema"{
-  filename = "${path.module}/request_schema.json"
+  filename = "${path.module}/schemas/request.json"
 }
 
 data "local_file" "boleto-payment-filter-policy"{
-  filename = "${path.module}/payment_notification_subscription_policies/boleto.json"
+  filename = "${path.module}/subscription_policies/boleto.json"
 }
 
 data "local_file" "debit-online-payment-filter-policy"{
-  filename = "${path.module}/payment_notification_subscription_policies/debit_online.json"
+  filename = "${path.module}/subscription_policies/debit_online.json"
 }
